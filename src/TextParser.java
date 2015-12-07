@@ -10,15 +10,17 @@ public class TextParser
 {
 	/* Variable*/
 	private String _filename;
-	private Database _bibleDatabase;
+	private final Database _bibleDatabase;
+	private final String bookName;
 	private BufferedReader _bufferedReader;
 	PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 	
 	/* Constructor */
-	public TextParser(String filename, Database db)
+	public TextParser(String filename, Database db, String book)
 	{
 		this._filename = filename;
 		this._bibleDatabase = db;
+		this.bookName = book;
 	}
 	
 	public void parseFile()
@@ -47,15 +49,14 @@ public class TextParser
 					String line;
 					String[] data;
 					int lineno=0;
+					BibleVerse verse = new BibleVerse();
 					
 					while ((line = _bufferedReader.readLine()) != null) 
 					{
 						++lineno;
-						if (lineno > 50) break;
-						
-						data = line.split("\\|");
-						pcs.firePropertyChange("logupdate", null, line);
-						pcs.firePropertyChange("logupdate", null, "Working on " + data[0] + " " + data[1] + "," + data[2]);
+						pcs.firePropertyChange("pgbupdate", null, lineno);
+						pcs.firePropertyChange("logupdate", null, "Processing line# " + Integer.toString(lineno) + " " + line);
+						Insert(line);
 					}
 					_bufferedReader.close();
 					return null;
@@ -71,8 +72,34 @@ public class TextParser
 		} 
 		catch (Exception e) 
 		{
-			
+			pcs.firePropertyChange("logupdate", null, "ERROR : " + e.getMessage());
 		}
+	}
+	
+	private Boolean Insert(String _text)
+	{
+		BibleVerse verse = new BibleVerse();
+		String[] data = _text.split("\\|");
+		verse._Version = "KJV";
+		verse._book = bookName;
+		verse._chapter = Integer.parseInt(data[1]);
+		verse._verse = Integer.parseInt(data[2]);
+		verse._verseText = data[3];
+		
+		try
+		{
+			if (data[0].equals(bookName) || bookName.equals("All"))
+			{
+				_bibleDatabase.Insert(verse);
+			}
+			pcs.firePropertyChange("logupdate", null, data[0] + " " + data[1] + "," + data[2] + " inserted into database successfully.");
+			return true;
+		}
+		catch(Exception e)
+		{
+			pcs.firePropertyChange("logupdate", null, "ERROR : " + e.getMessage());
+			return false;
+		}		
 	}
 	
 	public void addPropertyChangeListener(PropertyChangeListener listener)

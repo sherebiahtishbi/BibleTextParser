@@ -28,6 +28,7 @@ import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.File;
 import java.awt.event.ActionEvent;
 import java.awt.Font;
 import javax.swing.UIManager;
@@ -114,7 +115,8 @@ public class main extends JFrame
 		gbc_lblBooks.gridy = 2;
 		contentPane.add(lblBooks, gbc_lblBooks);
 		
-		String[] books = new String[]{"Genesis","Exodus","Leviticus","Numbers"};
+		String[] books = new String[]{"All","Genesis","Exodus","Leviticus","Numbers","Deuteronomy","Joshua","Judges","Ruth","1 Samuel","2 Samuel","1 Kings","2 Kings","1 Chronicles","2 Chronicles","Ezra","Nehemiah","Esther","Job","Psalms","Proverbs","Ecclesiastes","Song of Solomon","Isaiah","Jeremiah","Lamentations","Ezekiel","Daniel","Hosea","Joel","Amos","Obadiah","Jonah","Micah","Nahum","Habakkuk","Zephaniah","Haggai","Zechariah","Malachi","Matthew","Mark","Luke","John","Acts","Romans","1 Corinthians","2 Corinthians","Galatians","Ephesians","Philippians","Colossians","1 Thessalonians","2 Thessalonians","1 Timothy","2 Timothy","Titus","Philemon","Hebrews","James","1 Peter","2 Peter","1 John","2 John","3 John","Jude","Revelation"
+};
 		DefaultComboBoxModel<String> bookModel = new DefaultComboBoxModel<>(books);
 		JComboBox cmbBooks = new JComboBox(bookModel);
 		GridBagConstraints gbc_cmbBooks = new GridBagConstraints();
@@ -145,13 +147,14 @@ public class main extends JFrame
 		contentPane.add(lbllog, gbc_lbllog);
 		
 		JTextArea txtLog = new JTextArea();
-		txtLog.setRows(29);
 		txtLog.setEditable(false);
 		txtLog.setFont(new Font("Consolas", Font.PLAIN, 12));
+		txtLog.setCaretPosition(txtLog.getDocument().getLength());
 		
 		JScrollPane logScrollPane = new JScrollPane();
-		logScrollPane.setViewportBorder(UIManager.getBorder("ScrollPane.border"));
+		logScrollPane.setViewportBorder(UIManager.getBorder("Table.scrollPaneBorder"));
 		GridBagConstraints gbc_logScrollPane = new GridBagConstraints();
+		gbc_logScrollPane.weighty = 1.0;
 		gbc_logScrollPane.gridwidth = 2;
 		gbc_logScrollPane.insets = new Insets(3, 0, 3, 5);
 		gbc_logScrollPane.fill = GridBagConstraints.BOTH;
@@ -182,6 +185,8 @@ public class main extends JFrame
 		contentPane.add(lblStatus, gbc_lblStatus);		
 
 		JProgressBar pgbParser = new JProgressBar();
+		pgbParser.setMinimum(1);
+		pgbParser.setMaximum(31101);
 		GridBagConstraints gbc_pgbParser = new GridBagConstraints();
 		gbc_pgbParser.gridwidth = 2;
 		gbc_pgbParser.insets = new Insets(3, 0, 3, 5);
@@ -198,6 +203,7 @@ public class main extends JFrame
 			public void actionPerformed(ActionEvent arg) 
 			{
 			    JFileChooser chooser = new JFileChooser();
+			    chooser.setCurrentDirectory(new File("c:\\My Data\\HTMLApps"));
 			    FileNameExtensionFilter filter = new FileNameExtensionFilter("Text files", "txt");
 			    chooser.setFileFilter(filter);
 			    int returnVal = chooser.showOpenDialog(contentPane);
@@ -218,7 +224,7 @@ public class main extends JFrame
 				bibleDb.addPropertyChangeListener(new updateStatusListener(txtLog, pgbParser));
 
 				pcs.firePropertyChange("logupdate",null,"Started parsing [" + txtFile.getText() + "]");
-				TextParser parser = new TextParser(txtFile.getText(),bibleDb);
+				TextParser parser = new TextParser(txtFile.getText(),bibleDb,(String) cmbBooks.getSelectedItem());
 				parser.addPropertyChangeListener(new updateStatusListener(txtLog, pgbParser));
 				parser.parseFile();
 			}
@@ -240,8 +246,7 @@ public class main extends JFrame
 			{
 				@SuppressWarnings("unchecked")
 				JComboBox<String> combo = (JComboBox<String>) e.getSource();
-				String selectedBook = (String) combo.getSelectedItem();
-				pcs.firePropertyChange("logupdate", null,"[" + selectedBook + "] selected.");
+				pcs.firePropertyChange("logupdate", null,"[" + (String) combo.getSelectedItem() + "] selected.");
 			}
 		});
 	}
