@@ -10,9 +10,10 @@ public class updateStatusListener implements PropertyChangeListener
 
 	JLabel lblStatus = new JLabel(); 
 	JTextArea txtLog = new JTextArea();
+	JLabel lblPercent = new JLabel();
 	JProgressBar pgbParser = new JProgressBar();
 	
-	public updateStatusListener(JTextArea txt,JProgressBar pgb)
+	public updateStatusListener(JTextArea txt,JProgressBar pgb, JLabel lblPcnt)
 	{
 		txtLog = txt;
 		pgbParser = pgb;
@@ -25,7 +26,9 @@ public class updateStatusListener implements PropertyChangeListener
 		{
 			if (e.getNewValue() != null)
 			{
+				int pcnt = (((int) e.getNewValue())*100)/31102; 
 				pgbParser.setValue((int) e.getNewValue());
+				lblPercent.setText(pcnt + " %");
 			}
 		}
 		
@@ -34,6 +37,7 @@ public class updateStatusListener implements PropertyChangeListener
 			if (e.getNewValue() != null)
 			{
 				txtLog.append(e.getNewValue().toString()+"\n");
+				txtLog.setCaretPosition(txtLog.getDocument().getLength());
 			}
 		}
 	}

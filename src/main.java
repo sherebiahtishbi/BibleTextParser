@@ -195,8 +195,19 @@ public class main extends JFrame
 		gbc_pgbParser.gridx = 2;
 		gbc_pgbParser.gridy = 4;
 		contentPane.add(pgbParser,gbc_pgbParser);
+		
+		JLabel lblPercent = new JLabel();
+		lblPercent.setHorizontalAlignment(SwingConstants.LEFT);
+		lblPercent.setFont(new Font("Consolas", Font.BOLD, 16));
+		GridBagConstraints gbc_lblPercent = new GridBagConstraints();
+		gbc_lblPercent.insets = new Insets(3, 0, 3, 5);
+		gbc_lblPercent.fill = GridBagConstraints.HORIZONTAL;
+		gbc_lblPercent.anchor = GridBagConstraints.WEST;
+		gbc_lblPercent.gridx = 4;
+		gbc_lblPercent.gridy = 4;
+		contentPane.add(lblPercent,gbc_lblPercent);		
 
-		this.addPropertyChangeListener(new updateStatusListener(txtLog,pgbParser));
+		this.addPropertyChangeListener(new updateStatusListener(txtLog,pgbParser,lblPercent));
 
 		btnBrowse.addActionListener(new ActionListener() 
 		{
@@ -221,11 +232,11 @@ public class main extends JFrame
 			public void actionPerformed(ActionEvent e) 
 			{
 				Database bibleDb = new Database();
-				bibleDb.addPropertyChangeListener(new updateStatusListener(txtLog, pgbParser));
+				bibleDb.addPropertyChangeListener(new updateStatusListener(txtLog, pgbParser,lblPercent));
 
 				pcs.firePropertyChange("logupdate",null,"Started parsing [" + txtFile.getText() + "]");
 				TextParser parser = new TextParser(txtFile.getText(),bibleDb,(String) cmbBooks.getSelectedItem());
-				parser.addPropertyChangeListener(new updateStatusListener(txtLog, pgbParser));
+				parser.addPropertyChangeListener(new updateStatusListener(txtLog, pgbParser,lblPercent));
 				parser.parseFile();
 			}
 		});

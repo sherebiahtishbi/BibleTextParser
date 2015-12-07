@@ -55,7 +55,6 @@ public class TextParser
 					{
 						++lineno;
 						pcs.firePropertyChange("pgbupdate", null, lineno);
-						pcs.firePropertyChange("logupdate", null, "Processing line# " + Integer.toString(lineno) + " " + line);
 						Insert(line);
 					}
 					_bufferedReader.close();
@@ -80,19 +79,22 @@ public class TextParser
 	{
 		BibleVerse verse = new BibleVerse();
 		String[] data = _text.split("\\|");
-		verse._Version = "KJV";
-		verse._book = bookName;
-		verse._chapter = Integer.parseInt(data[1]);
-		verse._verse = Integer.parseInt(data[2]);
-		verse._verseText = data[3];
-		
 		try
 		{
 			if (data[0].equals(bookName) || bookName.equals("All"))
 			{
+				verse._Version = "KJV";
+				verse._book = data[0];
+				verse._chapter = Integer.parseInt(data[1]); 
+				verse._verse = Integer.parseInt(data[2]);
+				verse._verseText = data[3];
 				_bibleDatabase.Insert(verse);
+				pcs.firePropertyChange("logupdate", null, data[0] + " " + data[1] + "," + data[2] + " - INSERTED.");
 			}
-			pcs.firePropertyChange("logupdate", null, data[0] + " " + data[1] + "," + data[2] + " inserted into database successfully.");
+			else
+			{
+				pcs.firePropertyChange("logupdate", null, data[0] + " " + data[1] + "," + data[2] + " - SKIPPED.");
+			}
 			return true;
 		}
 		catch(Exception e)
