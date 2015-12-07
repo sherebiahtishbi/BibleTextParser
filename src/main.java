@@ -1,17 +1,21 @@
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.html.HTMLEditorKit.Parser;
+
+import org.eclipse.swt.internal.webkit.JSClassDefinition;
 
 import java.awt.GridBagLayout;
 import javax.swing.JLabel;
@@ -26,6 +30,8 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.awt.event.ActionEvent;
 import java.awt.Font;
+import javax.swing.UIManager;
+import javax.swing.UIManager.LookAndFeelInfo;
 
 public class main extends JFrame 
 {
@@ -53,6 +59,15 @@ public class main extends JFrame
 	 * Create the frame.
 	 */
 	public main() {
+		
+		try 
+		{
+	            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (Exception e) {
+		    // If Nimbus is not available, you can set the GUI to another look and feel.
+		}
+		
+		setTitle("Bible Parser");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 800, 600);
 		contentPane = new JPanel();
@@ -100,7 +115,8 @@ public class main extends JFrame
 		contentPane.add(lblBooks, gbc_lblBooks);
 		
 		String[] books = new String[]{"Genesis","Exodus","Leviticus","Numbers"};
-		JComboBox<String> cmbBooks = new JComboBox<>(books);
+		DefaultComboBoxModel<String> bookModel = new DefaultComboBoxModel<>(books);
+		JComboBox cmbBooks = new JComboBox(bookModel);
 		GridBagConstraints gbc_cmbBooks = new GridBagConstraints();
 		gbc_cmbBooks.fill = GridBagConstraints.HORIZONTAL;
 		gbc_cmbBooks.gridwidth = 2;
@@ -129,16 +145,21 @@ public class main extends JFrame
 		contentPane.add(lbllog, gbc_lbllog);
 		
 		JTextArea txtLog = new JTextArea();
+		txtLog.setRows(29);
 		txtLog.setEditable(false);
 		txtLog.setFont(new Font("Consolas", Font.PLAIN, 12));
-		GridBagConstraints gbc_txtLog = new GridBagConstraints();
-		gbc_txtLog.gridwidth = 2;
-		gbc_txtLog.insets = new Insets(3, 0, 3, 5);
-		gbc_txtLog.fill = GridBagConstraints.BOTH;
-		gbc_txtLog.anchor = GridBagConstraints.NORTH;
-		gbc_txtLog.gridx = 2;
-		gbc_txtLog.gridy = 3;
-		contentPane.add(txtLog,gbc_txtLog);
+		
+		JScrollPane logScrollPane = new JScrollPane();
+		logScrollPane.setViewportBorder(UIManager.getBorder("ScrollPane.border"));
+		GridBagConstraints gbc_logScrollPane = new GridBagConstraints();
+		gbc_logScrollPane.gridwidth = 2;
+		gbc_logScrollPane.insets = new Insets(3, 0, 3, 5);
+		gbc_logScrollPane.fill = GridBagConstraints.BOTH;
+		gbc_logScrollPane.anchor = GridBagConstraints.NORTH;
+		gbc_logScrollPane.gridx = 2;
+		gbc_logScrollPane.gridy = 3;
+		logScrollPane.setViewportView(txtLog);
+		contentPane.add(logScrollPane,gbc_logScrollPane);
 		
 		JButton btnCancel = new JButton("Cancel");
 		GridBagConstraints gbc_btnCancel = new GridBagConstraints();

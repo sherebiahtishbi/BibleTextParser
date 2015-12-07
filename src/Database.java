@@ -6,17 +6,21 @@ import java.sql.DriverManager;
 public class Database 
 {
 	
-	private final String url = "jdbc:mysql://192.168.1.133:3306/hymns";
+	private final String url = "jdbc:mysql://localhost:3306/fbcb";
 	private final String userId = "root";
 	private final String userPwd = "admin";
 	PropertyChangeSupport pcs = new PropertyChangeSupport(this);
+	private Connection _connection;
+	public Boolean connected = false;
 	
 	public Database()
 	{
 		try 
 		{
-			String driver = "com.mysql.jdbc.driver";
+			String driver = "com.mysql.jdbc.Driver";
 			Class.forName(driver).newInstance();
+			this._connection = DriverManager.getConnection(url,userId,userPwd);
+			connected = true;
 		} 
 		catch (Exception e) 
 		{
@@ -24,24 +28,6 @@ public class Database
 		}
 	}
 
-	public Boolean connect()
-	{
-		Boolean retval=false;
-		try
-		{
-			Connection _connection = DriverManager.getConnection(url,userId,userPwd);
-			if (!_connection.isClosed())
-			{
-				retval = true;
-			}
-		}
-		catch (Exception e)
-		{
-			
-		}
-		return retval;
-	}
-	
 	public void addPropertyChangeListener(PropertyChangeListener listener)
 	{
 		pcs.addPropertyChangeListener(listener);

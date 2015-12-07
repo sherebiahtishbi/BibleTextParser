@@ -25,7 +25,7 @@ public class TextParser
 	{
 		if (this._filename.length()==0) { return; }
 
-		if (this._bibleDatabase.connect())
+		if (this._bibleDatabase.connected)
 		{
 			pcs.firePropertyChange("logupdate", null, "Bible database connected successfully.");
 		}
