@@ -1,8 +1,11 @@
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 
 import javax.swing.SwingWorker;
 
@@ -12,15 +15,17 @@ public class TextParser
 	private String _filename;
 	private final Database _bibleDatabase;
 	private final String bookName;
+	private final String versionName;
 	private BufferedReader _bufferedReader;
 	PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 	
 	/* Constructor */
-	public TextParser(String filename, Database db, String book)
+	public TextParser(String filename, Database db, String book, String version)
 	{
 		this._filename = filename;
 		this._bibleDatabase = db;
 		this.bookName = book;
+		this.versionName = version;
 	}
 	
 	public void parseFile()
@@ -38,7 +43,8 @@ public class TextParser
 				
 		try 
 		{
-			FileReader _file = new FileReader(this._filename);	
+			/*FileReader _file = new FileReader(this._filename);*/
+			Reader _file = new InputStreamReader(new FileInputStream(this._filename),"UTF-8");
 			_bufferedReader = new BufferedReader(_file);
 			
 			SwingWorker parseWorker = new SwingWorker()
@@ -83,7 +89,7 @@ public class TextParser
 		{
 			if (data[0].equals(bookName) || bookName.equals("All"))
 			{
-				verse._Version = "KJV";
+				verse._Version = versionName;
 				verse._book = data[0];
 				verse._chapter = Integer.parseInt(data[1]); 
 				verse._verse = Integer.parseInt(data[2]);

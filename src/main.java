@@ -105,14 +105,36 @@ public class main extends JFrame
 		gbc_btnBrowse.gridx = 4;
 		gbc_btnBrowse.gridy = 1;
 		contentPane.add(btnBrowse,gbc_btnBrowse);
-
+		
 		/* Second Row */
+		JLabel lblVersion = new JLabel("Select Version :");
+		GridBagConstraints gbc_lblVersion = new GridBagConstraints();
+		gbc_lblVersion.anchor = GridBagConstraints.NORTHEAST;
+		gbc_lblVersion.insets = new Insets(0, 5, 0, 5);
+		gbc_lblVersion.gridx = 1;
+		gbc_lblVersion.gridy = 2;
+		contentPane.add(lblVersion, gbc_lblVersion);
+		
+		String[] versions = new String[]{"KJV","Gujarati"};
+		DefaultComboBoxModel<String> versionModel = new DefaultComboBoxModel<>(versions);
+		JComboBox cmbVersions = new JComboBox(versionModel);
+		GridBagConstraints gbc_cmbVersions = new GridBagConstraints();
+		gbc_cmbVersions.fill = GridBagConstraints.HORIZONTAL;
+		gbc_cmbVersions.gridwidth = 2;
+		gbc_cmbVersions.anchor = GridBagConstraints.NORTHWEST;
+		gbc_cmbVersions.insets = new Insets(3,0,3,5);
+		gbc_cmbVersions.gridx = 2;
+		gbc_cmbVersions.gridy = 2;
+		contentPane.add(cmbVersions,gbc_cmbVersions);
+		
+
+		/* Third Row */
 		JLabel lblBooks = new JLabel("Select Book :");
 		GridBagConstraints gbc_lblBooks = new GridBagConstraints();
 		gbc_lblBooks.anchor = GridBagConstraints.NORTHEAST;
 		gbc_lblBooks.insets = new Insets(0, 5, 0, 5);
 		gbc_lblBooks.gridx = 1;
-		gbc_lblBooks.gridy = 2;
+		gbc_lblBooks.gridy = 3;
 		contentPane.add(lblBooks, gbc_lblBooks);
 		
 		String[] books = new String[]{"All","Genesis","Exodus","Leviticus","Numbers","Deuteronomy","Joshua","Judges","Ruth","1 Samuel","2 Samuel","1 Kings","2 Kings","1 Chronicles","2 Chronicles","Ezra","Nehemiah","Esther","Job","Psalms","Proverbs","Ecclesiastes","Song of Solomon","Isaiah","Jeremiah","Lamentations","Ezekiel","Daniel","Hosea","Joel","Amos","Obadiah","Jonah","Micah","Nahum","Habakkuk","Zephaniah","Haggai","Zechariah","Malachi","Matthew","Mark","Luke","John","Acts","Romans","1 Corinthians","2 Corinthians","Galatians","Ephesians","Philippians","Colossians","1 Thessalonians","2 Thessalonians","1 Timothy","2 Timothy","Titus","Philemon","Hebrews","James","1 Peter","2 Peter","1 John","2 John","3 John","Jude","Revelation"
@@ -125,7 +147,7 @@ public class main extends JFrame
 		gbc_cmbBooks.anchor = GridBagConstraints.NORTHWEST;
 		gbc_cmbBooks.insets = new Insets(3,0,3,5);
 		gbc_cmbBooks.gridx = 2;
-		gbc_cmbBooks.gridy = 2;
+		gbc_cmbBooks.gridy = 3;
 		contentPane.add(cmbBooks,gbc_cmbBooks);
 		
 		JButton btnStart = new JButton("Start");
@@ -134,16 +156,16 @@ public class main extends JFrame
 		gbc_btnStart.fill = GridBagConstraints.HORIZONTAL;
 		gbc_btnStart.anchor = GridBagConstraints.NORTH;
 		gbc_btnStart.gridx = 4;
-		gbc_btnStart.gridy = 2;
+		gbc_btnStart.gridy = 3;
 		contentPane.add(btnStart,gbc_btnStart);
 		
-		/* Third row */
+		/* Fourth row */
 		JLabel lbllog = new JLabel("Log :");
 		GridBagConstraints gbc_lbllog = new GridBagConstraints();
 		gbc_lbllog.anchor = GridBagConstraints.NORTHEAST;
 		gbc_lbllog.insets = new Insets(0, 5, 0, 5);
 		gbc_lbllog.gridx = 1;
-		gbc_lbllog.gridy = 3;
+		gbc_lbllog.gridy = 4;
 		contentPane.add(lbllog, gbc_lbllog);
 		
 		JTextArea txtLog = new JTextArea();
@@ -160,7 +182,7 @@ public class main extends JFrame
 		gbc_logScrollPane.fill = GridBagConstraints.BOTH;
 		gbc_logScrollPane.anchor = GridBagConstraints.NORTH;
 		gbc_logScrollPane.gridx = 2;
-		gbc_logScrollPane.gridy = 3;
+		gbc_logScrollPane.gridy = 4;
 		logScrollPane.setViewportView(txtLog);
 		contentPane.add(logScrollPane,gbc_logScrollPane);
 		
@@ -170,10 +192,10 @@ public class main extends JFrame
 		gbc_btnCancel.fill = GridBagConstraints.HORIZONTAL;
 		gbc_btnCancel.anchor = GridBagConstraints.NORTH;
 		gbc_btnCancel.gridx = 4;
-		gbc_btnCancel.gridy = 3;
+		gbc_btnCancel.gridy = 4;
 		contentPane.add(btnCancel,gbc_btnCancel);
 
-		/* Fourth row */
+		/* Fifth row */
 		JLabel lblStatus = new JLabel("Status :");
 		lblStatus.setHorizontalAlignment(SwingConstants.CENTER);
 		GridBagConstraints gbc_lblStatus = new GridBagConstraints();
@@ -181,7 +203,7 @@ public class main extends JFrame
 		gbc_lblStatus.anchor = GridBagConstraints.NORTHEAST;
 		gbc_lblStatus.insets = new Insets(0, 5, 0, 5);
 		gbc_lblStatus.gridx = 1;
-		gbc_lblStatus.gridy = 4;
+		gbc_lblStatus.gridy = 5;
 		contentPane.add(lblStatus, gbc_lblStatus);		
 
 		JProgressBar pgbParser = new JProgressBar();
@@ -193,7 +215,7 @@ public class main extends JFrame
 		gbc_pgbParser.fill = GridBagConstraints.HORIZONTAL;
 		gbc_pgbParser.anchor = GridBagConstraints.WEST;
 		gbc_pgbParser.gridx = 2;
-		gbc_pgbParser.gridy = 4;
+		gbc_pgbParser.gridy = 5;
 		contentPane.add(pgbParser,gbc_pgbParser);
 		
 		JLabel lblPercent = new JLabel();
@@ -204,7 +226,7 @@ public class main extends JFrame
 		gbc_lblPercent.fill = GridBagConstraints.HORIZONTAL;
 		gbc_lblPercent.anchor = GridBagConstraints.WEST;
 		gbc_lblPercent.gridx = 4;
-		gbc_lblPercent.gridy = 4;
+		gbc_lblPercent.gridy = 5;
 		contentPane.add(lblPercent,gbc_lblPercent);		
 
 		this.addPropertyChangeListener(new updateStatusListener(txtLog,pgbParser,lblPercent));
@@ -235,7 +257,7 @@ public class main extends JFrame
 				bibleDb.addPropertyChangeListener(new updateStatusListener(txtLog, pgbParser,lblPercent));
 
 				pcs.firePropertyChange("logupdate",null,"Started parsing [" + txtFile.getText() + "]");
-				TextParser parser = new TextParser(txtFile.getText(),bibleDb,(String) cmbBooks.getSelectedItem());
+				TextParser parser = new TextParser(txtFile.getText(),bibleDb,(String) cmbBooks.getSelectedItem(),(String) cmbVersions.getSelectedItem());
 				parser.addPropertyChangeListener(new updateStatusListener(txtLog, pgbParser,lblPercent));
 				parser.parseFile();
 			}
