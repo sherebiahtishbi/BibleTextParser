@@ -9,21 +9,22 @@ import javax.swing.JProgressBar;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import java.awt.Insets;
+import java.awt.SystemColor;
 
 public class ThumbnailGeneratorUI extends JPanel 
 {
 	public ThumbnailGeneratorUI()
 	{
-		/* Set basic panel layout */
+		/** 
+		 * Set basic panel layout 
+		 */
 		setBasicLayout();
 		
-		/* Set the first row */
+		/** 
+		 * row wise layout 
+		 */
 		setFirstRow();
-		
-		/* Set the second row */
 		setSecondRow();
-
-		/* Set the second row */
 		setThirdRow();
 	}
 	
@@ -43,8 +44,10 @@ public class ThumbnailGeneratorUI extends JPanel
 		int rowNum = 0;
 		JLabel lblHeader = new JLabel();
 		lblHeader.setText("Thumbnail Generator");
-		lblHeader.setFont(new Font("Consolas",Font.BOLD, 16));
+		lblHeader.setFont(new Font("Consolas",Font.BOLD, 22));
+		lblHeader.setForeground(SystemColor.desktop);
 		GridBagConstraints gbc_lblHeader = new GridBagConstraints();
+		gbc_lblHeader.insets = new Insets(10, 10, 10, 10);
 		gbc_lblHeader.gridx = 0;
 		gbc_lblHeader.gridy = rowNum;
 		gbc_lblHeader.gridwidth = 6;
