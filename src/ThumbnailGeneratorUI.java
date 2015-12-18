@@ -14,6 +14,8 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import net.coobird.thumbnailator.Thumbnails;
+
 import java.awt.Insets;
 import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
@@ -39,7 +41,7 @@ public class ThumbnailGeneratorUI extends JPanel
 	private JLabel lblHeader, lblFolder, lblProgress, lblLog;
 	private JTextField txtFolder;
 	private JTextArea txtLog;
-	private JButton btnFolder;
+	private JButton btnFolder, btnStart;
 	private JProgressBar pgbThumb;
 	private JPanel contentPane; 
 	private JScrollPane scrollLog;
@@ -84,7 +86,19 @@ public class ThumbnailGeneratorUI extends JPanel
 			    	pChangeSupport.firePropertyChange("logupdate",null,"File selected to parse [" + txtFolder.getText() + "]");
 			    }				
 			}
-		});		
+		});
+		
+		/**
+		 * starts thumbnail generation process
+		 */
+		btnStart.addActionListener(new ActionListener() 
+		{
+			@Override
+			public void actionPerformed(ActionEvent e) 
+			{
+				GenerateThumbnails(txtFolder.getText());
+			}
+		});
 	}
 	
 	private void setBasicLayout()
@@ -165,6 +179,14 @@ public class ThumbnailGeneratorUI extends JPanel
 		gbc_pgbThumb.gridy = rowNum;
 		gbc_pgbThumb.gridwidth = 4;
 		this.add(pgbThumb, gbc_pgbThumb);
+		
+		btnStart = new JButton("Generate");
+		GridBagConstraints gbc_btnStart = new GridBagConstraints();
+		gbc_btnStart.fill = GridBagConstraints.BOTH;
+		gbc_btnStart.insets = new Insets(3, 5, 0, 5);
+		gbc_btnStart.gridx = 5;
+		gbc_btnStart.gridy = rowNum;
+		this.add(btnStart,gbc_btnStart);
 	}
 	
 	private void setFourthRow()
@@ -194,28 +216,57 @@ public class ThumbnailGeneratorUI extends JPanel
 		this.add(scrollLog,gbc_scrollLog);
 	}
 
-	private void GenerateThumbnails(String path) throws IOException
+	private void GenerateThumbnails(String path)
 	{
-		File dir = new File(path);
-		if (!dir.exists()) 
+		try 
 		{
-			pChangeSupport.firePropertyChange("logupdate",null,"Error : Folder [" + path + "] does not exist.");
-			return;
-		}
-		
-		File[] images = dir.listFiles();
-		
-		for(File file : images)
+			File dir = new File(path);
+			if (!dir.exists()) 
+			{
+				pChangeSupport.firePropertyChange("logupdate",null,"Error : Folder [" + path + "] does not exist.");
+				return;
+			}
+			
+			File[] images = dir.listFiles();
+			pgbThumb.setMinimum(0);
+			pgbThumb.setMaximum(images.length);
+			
+			int fIndex=0;
+			String thumnailName;
+			
+			for(File file : images)
+			{
+				pChangeSupport.firePropertyChange("pgbupdate", null,++fIndex);
+				
+				if (file.isFile() && validImage(file.getName()))
+				{
+					pChangeSupport.firePropertyChange("logupdate", null, "Valid image file ["+file.getAbsolutePath()+"]");
+					BufferedImage image = ImageIO.read(file);
+					
+					File thumbDir = new File(path + "\\thumbnails\\");
+					
+					if (!thumbDir.exists()) thumbDir.mkdir();
+					
+					thumnailName = path + "\\thumbnails\\" + fileNameWithoutExtension(file.getName()) + "_thumb.png";
+					System.out.println(thumnailName);	
+					
+					File thumbFile = new File(thumnailName);
+					
+					if (!thumbFile.exists())
+					{
+						Thumbnails.of(file).size(100, 100).toFile(thumnailName);
+						pChangeSupport.firePropertyChange("logupdate", null, "Thumbnail already exist for ["+file.getAbsolutePath()+"]");
+					}
+				}
+				else 
+				{
+					pChangeSupport.firePropertyChange("logupdate", null, "Skipped ["+file.getName()+"]");
+				}
+			}
+		} 
+		catch (Exception e) 
 		{
-			if (file.isFile() && validImage(file.getName()))
-			{
-				BufferedImage image = ImageIO.read(file);
-				BufferedImage thumbImg = Scalr.
-			}
-			else 
-			{
-				pChangeSupport.firePropertyChange("logupdate", null, "Skipped ["+file.getName()+"]");
-			}
+			e.printStackTrace();
 		}
 	}
 	
@@ -226,8 +277,16 @@ public class ThumbnailGeneratorUI extends JPanel
 			return false;
 		}
 		
+		if (filename.contains("_thumb")) return false;
+		
 		String fileExtension = filename.substring(filename.lastIndexOf(".")+1);
-
-		return (Arrays.asList(validImageExtensions).contains(fileExtension)) ? true : false;
+		
+		return (Arrays.asList(validImageExtensions).contains(fileExtension.toUpperCase())) ? true : false;
+	}
+	
+	private String fileNameWithoutExtension(String filename)
+	{
+		String fileExtension = filename.substring(filename.lastIndexOf("."));
+		return filename.substring(0,filename.indexOf(fileExtension));
 	}
 }

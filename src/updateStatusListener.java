@@ -28,7 +28,7 @@ public class updateStatusListener implements PropertyChangeListener
 			{
 				int pcnt = (((int) e.getNewValue())*100)/31102; 
 				pgbParser.setValue((int) e.getNewValue());
-				lblPercent.setText(pcnt + " %");
+//				lblPercent.setText(pcnt + " %");
 			}
 		}
 		
