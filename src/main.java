@@ -66,6 +66,12 @@ public class main extends JFrame
 		try 
 		{
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+		        if ("Nimbus".equals(info.getName())) {
+		            UIManager.setLookAndFeel(info.getClassName());
+		            break;
+		        }
+		    }
 		} 
 		catch (Exception e) 
 		{
@@ -79,6 +85,7 @@ public class main extends JFrame
 		JTabbedPane tabbedPane = new JTabbedPane();
 		tabbedPane.add("Bible Parser",new BibleParserUI());
 		tabbedPane.add("Thumbnail Generator",new ThumbnailGeneratorUI());
+		tabbedPane.setFont(new Font("Consolas", Font.PLAIN, 14));
 		setContentPane(tabbedPane);
 	}
 }

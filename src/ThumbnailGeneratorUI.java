@@ -2,19 +2,51 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 
+import javax.imageio.ImageIO;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
+import javax.swing.filechooser.FileNameExtensionFilter;
+
 import java.awt.Insets;
 import java.awt.SystemColor;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.beans.PropertyChangeSupport;
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
 
 public class ThumbnailGeneratorUI extends JPanel 
 {
+	String[] validImageExtensions = new String[]{"JPG","PNG"};
+	
+	/**
+	 * property change support
+	 */
+	PropertyChangeSupport pChangeSupport = new PropertyChangeSupport(this);
+		
+	/**
+	 * All panel controls
+	 */
+	private JLabel lblHeader, lblFolder, lblProgress, lblLog;
+	private JTextField txtFolder;
+	private JTextArea txtLog;
+	private JButton btnFolder;
+	private JProgressBar pgbThumb;
+	private JPanel contentPane; 
+	private JScrollPane scrollLog;
+	
 	public ThumbnailGeneratorUI()
 	{
+		contentPane = this;
 		/** 
 		 * Set basic panel layout 
 		 */
@@ -26,6 +58,33 @@ public class ThumbnailGeneratorUI extends JPanel
 		setFirstRow();
 		setSecondRow();
 		setThirdRow();
+		setFourthRow();
+		
+		/**
+		 * setup property change listener
+		 */
+		this.pChangeSupport.addPropertyChangeListener(new updateStatusListener(txtLog, pgbThumb, null));
+		
+		/** 
+		 * btnBrowse - action listener 
+		 */
+		btnFolder.addActionListener(new ActionListener() 
+		{
+			public void actionPerformed(ActionEvent arg) 
+			{
+			    JFileChooser chooser = new JFileChooser();
+			    chooser.setCurrentDirectory(new File("c:\\My Data\\HTMLApps"));
+			    FileNameExtensionFilter filter = new FileNameExtensionFilter("Text files", "txt");
+			    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+			    chooser.setAcceptAllFileFilterUsed(false);
+			    int returnVal = chooser.showOpenDialog(contentPane);
+			    if(returnVal == JFileChooser.APPROVE_OPTION) 
+			    {
+			    	txtFolder.setText(chooser.getSelectedFile().getAbsolutePath());
+			    	pChangeSupport.firePropertyChange("logupdate",null,"File selected to parse [" + txtFolder.getText() + "]");
+			    }				
+			}
+		});		
 	}
 	
 	private void setBasicLayout()
@@ -42,7 +101,7 @@ public class ThumbnailGeneratorUI extends JPanel
 	private void setFirstRow()
 	{
 		int rowNum = 0;
-		JLabel lblHeader = new JLabel();
+		lblHeader = new JLabel();
 		lblHeader.setText("Thumbnail Generator");
 		lblHeader.setFont(new Font("Consolas",Font.BOLD, 22));
 		lblHeader.setForeground(SystemColor.desktop);
@@ -57,7 +116,7 @@ public class ThumbnailGeneratorUI extends JPanel
 	private void setSecondRow()
 	{
 		int rowNum = 1;
-		JLabel lblFolder = new JLabel();
+		lblFolder = new JLabel();
 		lblFolder.setText("Select image folder");
 		GridBagConstraints gbc_lblFolder = new GridBagConstraints();
 		gbc_lblFolder.insets = new Insets(3, 0, 3, 5);
@@ -65,7 +124,7 @@ public class ThumbnailGeneratorUI extends JPanel
 		gbc_lblFolder.gridy = rowNum;
 		this.add(lblFolder, gbc_lblFolder);
 		
-		JTextField txtFolder = new JTextField();
+		txtFolder = new JTextField();
 		GridBagConstraints gbc_txtFolder = new GridBagConstraints();
 		gbc_txtFolder.fill = GridBagConstraints.HORIZONTAL;
 		gbc_txtFolder.gridx=1;
@@ -73,9 +132,10 @@ public class ThumbnailGeneratorUI extends JPanel
 		gbc_txtFolder.gridwidth = 4;
 		this.add(txtFolder, gbc_txtFolder);
 		
-		JButton btnFolder = new JButton();
+		btnFolder = new JButton();
 		btnFolder.setText("Browse Folders");
 		GridBagConstraints gbc_btnFolder = new GridBagConstraints();
+		gbc_btnFolder.insets = new Insets(0, 5, 0, 5);
 		gbc_btnFolder.gridx = 5;
 		gbc_btnFolder.gridy = rowNum;
 		this.add(btnFolder, gbc_btnFolder);
@@ -84,7 +144,7 @@ public class ThumbnailGeneratorUI extends JPanel
 	private void setThirdRow()
 	{
 		int rowNum = 2;
-		JLabel lblProgress = new JLabel();
+		lblProgress = new JLabel();
 		lblProgress.setText("Progress");
 		GridBagConstraints gbc_lblProgress = new GridBagConstraints();
 		gbc_lblProgress.anchor = GridBagConstraints.NORTHEAST;
@@ -93,11 +153,12 @@ public class ThumbnailGeneratorUI extends JPanel
 		gbc_lblProgress.gridy = rowNum;
 		this.add(lblProgress, gbc_lblProgress);
 		
-		JProgressBar pgbThumb = new JProgressBar();
+		pgbThumb = new JProgressBar();
+		pgbThumb.setStringPainted(true);
 		pgbThumb.setMinimum(0);
 		pgbThumb.setMaximum(100);
 		GridBagConstraints gbc_pgbThumb = new GridBagConstraints();
-		gbc_pgbThumb.insets = new Insets(5, 0, 3, 5);
+		gbc_pgbThumb.insets = new Insets(5, 0, 0, 0);
 		gbc_pgbThumb.anchor = GridBagConstraints.NORTH;
 		gbc_pgbThumb.fill = GridBagConstraints.HORIZONTAL;
 		gbc_pgbThumb.gridx=1;
@@ -105,5 +166,68 @@ public class ThumbnailGeneratorUI extends JPanel
 		gbc_pgbThumb.gridwidth = 4;
 		this.add(pgbThumb, gbc_pgbThumb);
 	}
+	
+	private void setFourthRow()
+	{
+		int rowNum = 3;
+		lblLog = new JLabel("Log");
+		GridBagConstraints gbc_lblLog = new GridBagConstraints();
+		gbc_lblLog.gridx = 0;
+		gbc_lblLog.gridy = rowNum;
+		gbc_lblLog.anchor = GridBagConstraints.NORTHEAST;
+		gbc_lblLog.insets = new Insets(5, 0, 3, 5);
+		this.add(lblLog,gbc_lblLog);
+		
+		txtLog = new JTextArea();
+		
+		scrollLog = new JScrollPane();
+		GridBagConstraints gbc_scrollLog = new GridBagConstraints();
+		gbc_scrollLog.weighty = 1.0;
+		gbc_scrollLog.gridx = 1;
+		gbc_scrollLog.gridy = rowNum;
+		gbc_scrollLog.insets = new Insets(5, 0, 0, 0);
+		gbc_scrollLog.anchor = GridBagConstraints.NORTH;
+		gbc_scrollLog.gridwidth = 4;
+		gbc_scrollLog.fill = GridBagConstraints.BOTH;
+		scrollLog.setViewportView(txtLog);
+		
+		this.add(scrollLog,gbc_scrollLog);
+	}
 
+	private void GenerateThumbnails(String path) throws IOException
+	{
+		File dir = new File(path);
+		if (!dir.exists()) 
+		{
+			pChangeSupport.firePropertyChange("logupdate",null,"Error : Folder [" + path + "] does not exist.");
+			return;
+		}
+		
+		File[] images = dir.listFiles();
+		
+		for(File file : images)
+		{
+			if (file.isFile() && validImage(file.getName()))
+			{
+				BufferedImage image = ImageIO.read(file);
+				BufferedImage thumbImg = Scalr.
+			}
+			else 
+			{
+				pChangeSupport.firePropertyChange("logupdate", null, "Skipped ["+file.getName()+"]");
+			}
+		}
+	}
+	
+	private boolean validImage(String filename)
+	{
+		if (filename.lastIndexOf(".") == -1 && filename.lastIndexOf(".") == 0)
+		{
+			return false;
+		}
+		
+		String fileExtension = filename.substring(filename.lastIndexOf(".")+1);
+
+		return (Arrays.asList(validImageExtensions).contains(fileExtension)) ? true : false;
+	}
 }
